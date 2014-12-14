@@ -10,7 +10,7 @@ from key import config
 class PocketFetch:
   def __init__(self):
     conn = pymongo.Connection()
-    self.db = conn.lists
+    self.db = conn.links
     self.consumer_key = config.Pocket.consumer_key
     self.access_token = config.Pocket.access_token
     self.url = 'https://getpocket.com/v3/get'
@@ -31,14 +31,18 @@ class PocketFetch:
       item = {
         'id':r,
         'title':res['list'][r]['resolved_title'].encode('utf_8'),
-        'url':res['list'][r]['resolved_url']
+        'url':res['list'][r]['resolved_url'],
+        'tag':tag
       }
-      self.db.lists.item.save(item)
+      self.db.links.item.save(item)
 
 def main():
   pocket = PocketFetch()
-  since = int(time.time()) - 60 * 60 * 24
-  tags = ['iOS', 'Android', 'Rails', 'Infrastructure']
+  since = str(int(time.time()) - 60 * 60 * 24)
+  tags = ['algorithm', 'android', 'javascript', 'design',
+    'go', 'note', 'infrastructure', 'ios/osx',
+    'mongodb', 'mysql', 'python', 'research',
+    'ruby', 'data-science', 'tips']
   for tag in tags:
     pocket.saveItems(tag, since)
 
